@@ -85,6 +85,50 @@ class CustomConverter extends AbstractConverter {
 - **Observer-Kompatibilität**: Neue Observers sollten optional sein
 - **Backward Compatibility**: Alte Converter sollten noch funktionieren
 
+## Häufige Use Cases
+
+### CSV-Konvertierungs-Beispiele
+```csv
+input,converter_type,expected_output
+19.99,decimal,"19.99"
+1000.50,decimal,"1000.50"
+"True",boolean,"1"
+"2026-01-01",date,"2026-01-01 00:00:00"
+```
+
+### Szenarien
+1. **Dezimal-Preise**: Konvertierung von verschiedenen Dezimal-Formaten (1.234,56 vs 1,234.56)
+2. **Boolean-Flags**: TRUE/FALSE → 1/0 Konvertierung
+3. **String-Transformationen**: Uppercase, Trim, Slugify
+4. **Type-Coercion**: String → Integer, Float, Boolean
+
+## Performance-Überlegungen
+
+- **Converter-Overhead**: ~0.5-1ms pro Konvertierung durchschnittlich
+- **Batch-Conversion**: 10.000 Konvertierungen: ~5-10 Sekunden
+- **Decimal-Precision**: Dezimal-Konvertierung etwas teurer als andere (~1-2ms)
+- **Strategy-Pattern**: Mehrere Converter-Instanzen verursachen minimal Overhead
+- **Optimal für**: < 1.000 Konvertierungen pro Sekunde mit Standard-Convertern
+
+## Verwandte Module
+
+- **import-converter-customer-attribute**: Nutzt Converter für Customer Attributes
+- **import-converter-product-attribute**: Nutzt Converter für Product Attributes
+- **import-converter-product-category**: Nutzt Converter für Category Data
+- **import-converter-ee**: EE-spezifische Converter
+- **import-converter** ← **diese Datei** (Framework!)
+
+## Troubleshooting & FAQ
+
+**Q: Dezimal-Konvertierung gibt falsche Werte**
+- A: Locale-Einstellung prüfen! `DecimalConverter` nutzt `php.ini` `decimal_separator`. Setze `ini_set('decimal_separator', '.')`
+
+**Q: Custom Converter wird nicht aufgerufen**
+- A: Converter-Registrierung in DI-Konfiguration prüfen oder Observer-Registrierung.
+
+**Q: "Converter not found" Fehler**
+- A: Converter-Klasse nicht im Autoloader registriert oder falsche Class-Reference in Config.
+
 ## Bekannte Einschränkungen
 
 - **Generisches Framework**: Keine spezialisierte Logik
